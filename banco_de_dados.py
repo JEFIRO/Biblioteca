@@ -1,5 +1,6 @@
 import pyodbc
 from tkinter import messagebox
+import datetime
 
 
 class Dados:
@@ -43,7 +44,7 @@ class Dados:
         except Exception as e:
             messagebox.showerror("ERRO", f"{e}")
 
-    def adicionar_alunos(self, nome, serie, turma, sala, endereco,):
+    def adicionar_alunos(self, nome, serie, turma, sala, endereco):
         try:
             if int(sala):
                 sala = int(sala)
@@ -62,6 +63,32 @@ class Dados:
         except Exception as e:
             messagebox.showerror("ERRO", f"{e}")
 
+    def emprestar_livro(self, nome, serie, turma, sala, livro):
+
+        try:
+            self.command = f"""SELECT * FROM Aluno WHERE Nome = '{nome}'AND Serie = '{serie}' AND Turma = '{turma}'
+            AND Sala = '{sala}' ORDER BY ID"""
+
+            dados = self.verificar_dados(self.command)
+
+            if dados:
+                data = datetime.datetime.now()
+                data.strftime("%d-%m-%Y")
+                data_devolucao = data + datetime.timedelta(weeks=1)
+                command = f"""INSERT INTO Emprestimo (Aluno,Namelivro, Serie, Turma, Sala, Dataemprestimo, Datadevolucao)
+                                    VALUES
+                             ('{nome}', '{livro}', '{serie}', {turma},'{sala}','{data}', {data_devolucao})"""
+                self.rodar_comandos_add(command)
+                messagebox.showinfo("!!!", "concluido")
+            else:
+                messagebox.showerror("ERRO", f"error")
+                return
+
+        except pyodbc.Error as e:
+            messagebox.showerror("ERRO", f"{e}")
+        except Exception as e:
+            messagebox.showerror("ERRO", f"{e}")
+
     def rodar_comandos_add(self, command):
         try:
             conn = self.conexao
@@ -73,7 +100,7 @@ class Dados:
             messagebox.showerror("ERRO", f"{e}")
         except Exception as e:
             messagebox.showerror("ERRO", f"{e}")
-            
+
     def verificar_dados(self, command):
         try:
             conn = self.conexao
@@ -83,4 +110,3 @@ class Dados:
             return dados
         except pyodbc.Error as e:
             messagebox.showerror("ERRO", f"{e}")
-
