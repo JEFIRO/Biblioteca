@@ -8,13 +8,14 @@ class Dados:
         self.dados_De_conexao = None
         self.conexao = None
         self.command = None
+        self.conectar()
 
     def conectar(self):
         try:
             self.dados_De_conexao = (
                 "Driver={SQL server};"
                 "Server=DESKTOP-NSKNLOB;"
-                "Database=ITEMS;"
+                "Database=Biblioteca;"
             )
             self.conexao = pyodbc.connect(self.dados_De_conexao)
             return self.conexao
@@ -25,12 +26,6 @@ class Dados:
 
     def adicionar_livros(self, nome, autor, genero, estante, prateleira, quantidade):
         try:
-            self.conectar()
-
-            if int(quantidade):
-                quantidade = int(quantidade)
-            else:
-                return
 
             if not nome or not autor or not genero or not estante or not prateleira or not quantidade:
                 messagebox.showerror("ERRO", "Preencha todos os campos")
@@ -38,9 +33,10 @@ class Dados:
 
             else:
                 self.command = f"""INSERT INTO Livros (Nome, Autor, Genero, Estante, Prateleira, Quantidade)
-                                    VALUES
-                                   ('{nome}', '{autor}', '{genero}', '{estante}',{quantidade})"""
+                            VALUES
+                                   ('{nome}', '{autor}', '{genero}', '{estante}','{prateleira}',{quantidade})"""
                 self.rodar_comandos_add(self.command)
+                messagebox.showinfo("Adicionado com sucesso")
         except Exception as e:
             messagebox.showerror("ERRO", f"{e}")
 
