@@ -8,7 +8,7 @@ class MinhaApp:
     def __init__(self):
         self.janela = Tk()
         self.janela.title("Biblioteca")
-        self.janela.geometry('100x568')
+        self.janela.geometry('1050x568')
         self.preto = 'black'
         self.banco_de_dados = Dados()
         self.frames()
@@ -44,7 +44,7 @@ class MinhaApp:
 
         self.treeview_livros.pack(padx=10, pady=10)
         self.adicionar_dados_tv('SELECT * FROM Livros', self.treeview_livros)
-        self.dados_livros()
+        self.bottao_livros()
 
     def aluno(self):
 
@@ -64,9 +64,12 @@ class MinhaApp:
         self.treeview_aluno.column("sala", width=60)
         self.treeview_aluno.column("endereco", width=100)
 
-        self.treeview_aluno.grid(column=0, row=0, padx=10, pady=10, sticky="nsew")
+        self.treeview_aluno.pack(padx=10, pady=10)
 
-    def dados_livros(self):
+        self.adicionar_dados_tv('SELECT * FROM Aluno', self.treeview_aluno)
+        self.bottao_alunos()
+
+    def bottao_livros(self):
         # label
         try:
             self.label_nome = Label(self.frame_butao, text="Nome")
@@ -108,10 +111,48 @@ class MinhaApp:
             self.adicionar_dados = Button(self.frame_butao, text='Adicionar',command=self.adicionar_livros)
             self.adicionar_dados.pack(side='left', anchor='w', padx=10, pady=10)
 
-            self.adicionar_aluno = Button(self.frame_butao, text='Adicionar aluno')
-            self.adicionar_aluno.pack(side='left', anchor='w', padx=10, pady=10)
+            self.adicionar_aluno_tv = Button(self.frame_butao, text='Adicionar aluno', command=self.aluno)
+            self.adicionar_aluno_tv.pack(side='left', anchor='w', padx=10, pady=10)
 
-        except EXCEPTION as e:
+        except Exception as e:
+            messagebox.showerror("ERRO", f"{e}")
+
+    def bottao_alunos(self):
+        try:
+            self.label_nome_aluno = Label(self.frame_aluno, text="Nome")
+            self.label_nome_aluno.pack(side='left', anchor='w', padx=10, pady=10)
+
+            self.entry_name_aluno = Entry(self.frame_aluno, width=10)
+            self.entry_name_aluno.pack(side='left', anchor='w', padx=10, pady=10)
+
+            self.label_serie_aluno = Label(self.frame_aluno, text="serie")
+            self.label_serie_aluno.pack(side='left', anchor='w', padx=10, pady=10)
+
+            self.entry_serie_aluno = Entry(self.frame_aluno, width=10)
+            self.entry_serie_aluno.pack(side='left', anchor='w', padx=10, pady=10)
+
+            self.label_turma_aluno = Label(self.frame_aluno, text="turma")
+            self.label_turma_aluno.pack(side='left', anchor='w', padx=10, pady=10)
+
+            self.entry_turma_aluno = Entry(self.frame_aluno, width=10)
+            self.entry_turma_aluno.pack(side='left', anchor='w', padx=10, pady=10)
+
+            self.label_sala_aluno = Label(self.frame_aluno, text="sala")
+            self.label_sala_aluno.pack(side='left', anchor='w', padx=10, pady=10)
+
+            self.entry_sala_aluno = Entry(self.frame_aluno, width=10)
+            self.entry_sala_aluno.pack(side='left', anchor='w', padx=10, pady=10)
+
+            self.label_endereco_aluno = Label(self.frame_aluno, text="endereco")
+            self.label_endereco_aluno.pack(side='left', anchor='w', padx=10, pady=10)
+
+            self.entry_endereco_aluno = Entry(self.frame_aluno, width=5)
+            self.entry_endereco_aluno.pack(side='left', anchor='w', padx=10, pady=10)
+
+            self.adicionar_dados_aluno = Button(self.frame_aluno, text='Adiciona', command=self.adicionar_aluno)
+            self.adicionar_dados_aluno.pack(side='left', anchor='w', padx=10, pady=10)
+
+        except Exception as e:
             messagebox.showerror("ERRO", f"{e}")
 
     def adicionar_livros(self):
@@ -126,8 +167,25 @@ class MinhaApp:
             self.banco_de_dados.adicionar_livros(nome, autor, genero, estante, prateleira, quantidade)
             self.adicionar_dados_tv('SELECT * FROM Livros', self.treeview_livros)
 
-        except EXCEPTION as e:
+        except Exception as e:
             messagebox.showerror("ERRO", f"{e}")
+
+
+    def adicionar_aluno(self):
+        try:
+            nome = self.entry_name_aluno.get()
+            serie = self.entry_serie_aluno.get()
+            turma = self.entry_turma_aluno.get()
+            sala = self.entry_sala_aluno.get()
+            endereco = self.entry_endereco_aluno.get()
+
+            self.banco_de_dados.adicionar_alunos(nome, serie, turma, sala, endereco)
+            self.adicionar_dados_tv('SELECT * FROM Aluno', self.treeview_aluno)
+
+        except Exception as e:
+            messagebox.showerror("ERRO", f"{e}")
+            return
+
 
     def adicionar_dados_tv(self, comando, treeview):
         dados = self.banco_de_dados.verificar_dados(comando)

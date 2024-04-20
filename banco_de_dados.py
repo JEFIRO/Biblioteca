@@ -42,18 +42,16 @@ class Dados:
 
     def adicionar_alunos(self, nome, serie, turma, sala, endereco):
         try:
-            if int(sala):
-                sala = int(sala)
-            else:
-                return
             if not nome or not serie or not turma or not sala or not endereco:
                 messagebox.showerror("ERRO", "Preencha todos os campos")
                 return
-            else:
-                self.command = f"""INSERT INTO Aluno (Nome, Serie, Turma, Sala, Endereco, ADM)
-                                    VALUES
-                                   ('{nome}', '{serie}', '{turma}', {sala},'{endereco}','NOT')"""
-                self.rodar_comandos_add(self.command)
+
+            self.command = f"""INSERT INTO Aluno (Nome, Serie, Turma, Sala, Endereço, ADM)
+                                VALUES
+                               ('{nome}', '{serie}', '{turma}', {sala},'{endereco}','NOT')"""
+            self.rodar_comandos_add(self.command)
+            messagebox.showinfo("!!!", "concluido")
+
         except pyodbc.Error as e:
             messagebox.showerror("ERRO", f"{e}")
         except Exception as e:
@@ -91,6 +89,7 @@ class Dados:
             cursor = conn.cursor()
             cursor.execute(command)
             conn.commit()
+            messagebox.showinfo("sucesso", "Adicionado com sucesso")
 
         except pyodbc.Error as e:
             messagebox.showerror("ERRO", f"{e}")
