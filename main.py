@@ -13,7 +13,7 @@ class MinhaApp:
         self.banco_de_dados = Dados()
         self.frames()
         self.livros()
-        self.aluno()
+        #self.aluno()
 
 
         self.janela.mainloop()
@@ -46,6 +46,8 @@ class MinhaApp:
         self.adicionar_dados_tv('SELECT * FROM Livros', self.treeview_livros)
         self.bottao_livros()
 
+        #self.scrolbar(self.frame_tv, self.treeview_livros)
+
     def aluno(self):
 
         self.frame_aluno = Toplevel(self.frame_tv)
@@ -68,6 +70,8 @@ class MinhaApp:
 
         self.adicionar_dados_tv('SELECT * FROM Aluno', self.treeview_aluno)
         self.bottao_alunos()
+
+        self.scrolbar(self.frame_aluno, self.treeview_aluno)
 
     def bottao_livros(self):
         # label
@@ -113,6 +117,7 @@ class MinhaApp:
 
             self.adicionar_aluno_tv = Button(self.frame_butao, text='Adicionar aluno', command=self.aluno)
             self.adicionar_aluno_tv.pack(side='left', anchor='w', padx=10, pady=10)
+
 
         except Exception as e:
             messagebox.showerror("ERRO", f"{e}")
@@ -186,12 +191,21 @@ class MinhaApp:
             messagebox.showerror("ERRO", f"{e}")
             return
 
-
     def adicionar_dados_tv(self, comando, treeview):
         dados = self.banco_de_dados.verificar_dados(comando)
         treeview.delete(*treeview.get_children())
         for livros in dados:
             item_cleaned = [str(x) for x in livros]
             treeview.insert("", "end", values=item_cleaned)
+
+    def scrolbar(self, frame, tree):
+
+        scroll = ttk.Scrollbar(frame, orient="vertical", command=tree.yview)
+        scroll.pack(side='right', fill='y')
+        tree.configure(yscrollcommand=scroll.set)
+
+    def scroll_y(*args, text):
+        text.yview(*args)
+
 
 run = MinhaApp()
