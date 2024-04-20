@@ -6,6 +6,7 @@ from banco_de_dados import Dados
 
 class MinhaApp:
     def __init__(self):
+        self.lista = ['',]
         self.janela = Tk()
         self.janela.title("Biblioteca")
         self.janela.geometry('1050x568')
@@ -14,6 +15,7 @@ class MinhaApp:
         self.frames()
         self.livros()
         #self.aluno()
+        self.emprestar()
 
 
         self.janela.mainloop()
@@ -46,7 +48,7 @@ class MinhaApp:
         self.adicionar_dados_tv('SELECT * FROM Livros', self.treeview_livros)
         self.bottao_livros()
 
-        #self.scrolbar(self.frame_tv, self.treeview_livros)
+        self.scrolbar(self.frame_tv, self.treeview_livros)
 
     def aluno(self):
 
@@ -72,6 +74,21 @@ class MinhaApp:
         self.bottao_alunos()
 
         self.scrolbar(self.frame_aluno, self.treeview_aluno)
+
+    def emprestar(self):
+        self.adicionar_a_lista()
+        self.frame_emprestar = Toplevel(self.frame_tv)
+
+        self.commonbox = ttk.Combobox(self.frame_emprestar,values=self.lista)
+        self.commonbox.pack()
+
+    def adicionar_a_lista(self):
+
+        dados = self.banco_de_dados.verificar_dados('SELECT Nome FROM Livros')
+        for dado in dados:
+            item_cleaned = str(dado[0])  # Pega o primeiro elemento da tupla
+            self.lista.append(item_cleaned)  # Adiciona à lista
+
 
     def bottao_livros(self):
         # label
@@ -198,10 +215,11 @@ class MinhaApp:
             item_cleaned = [str(x) for x in livros]
             treeview.insert("", "end", values=item_cleaned)
 
+
     def scrolbar(self, frame, tree):
 
         scroll = ttk.Scrollbar(frame, orient="vertical", command=tree.yview)
-        scroll.pack(side='right', fill='y')
+        scroll.pack(side='right', fill='y', anchor='n')
         tree.configure(yscrollcommand=scroll.set)
 
     def scroll_y(*args, text):
