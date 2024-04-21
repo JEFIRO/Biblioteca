@@ -75,12 +75,25 @@ class MinhaApp:
 
         self.scrolbar(self.frame_aluno, self.treeview_aluno)
 
+    def atualizar_combobox(self):
+        texto = self.commonbox_var.get().lower()
+        livros_correspondentes = [livro for livro in self.lista if texto in livro.lower()]
+        self.commonbox['values'] = livros_correspondentes if texto else self.lista
+
+    def abrir_menu(self, event):
+        self.commonbox.event_generate('<Down>')
+
     def emprestar(self):
         self.adicionar_a_lista()
         self.frame_emprestar = Toplevel(self.frame_tv)
 
-        self.commonbox = ttk.Combobox(self.frame_emprestar,values=self.lista)
+        self.commonbox_var = StringVar()
+        self.commonbox = ttk.Combobox(self.frame_emprestar, textvariable=self.commonbox_var)
+        self.commonbox['values'] = self.lista
         self.commonbox.pack()
+
+        self.commonbox.bind('<KeyRelease>', lambda event=None:  (self.atualizar_combobox(), self.abrir_menu(event)))
+
 
     def adicionar_a_lista(self):
 
