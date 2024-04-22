@@ -1,12 +1,16 @@
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
+
+import pyodbc
+
 from banco_de_dados import Dados
 
 
 class MinhaApp:
     def __init__(self):
         self.lista = ['',]
+        self.lista_aluno = ['',]
         self.janela = Tk()
         self.janela.title("Biblioteca")
         self.janela.geometry('1050x568')
@@ -71,36 +75,74 @@ class MinhaApp:
         self.treeview_aluno.pack(padx=10, pady=10)
 
         self.adicionar_dados_tv('SELECT * FROM Aluno', self.treeview_aluno)
+
         self.bottao_alunos()
 
         self.scrolbar(self.frame_aluno, self.treeview_aluno)
 
-    def atualizar_combobox(self):
-        texto = self.commonbox_var.get().lower()
-        livros_correspondentes = [livro for livro in self.lista if texto in livro.lower()]
-        self.commonbox['values'] = livros_correspondentes if texto else self.lista
-
-    def abrir_menu(self, event):
-        self.commonbox.event_generate('<Down>')
-
     def emprestar(self):
+
         self.adicionar_a_lista()
         self.frame_emprestar = Toplevel(self.frame_tv)
 
+        label_name = Label(self.frame_emprestar,text="livro")
+        label_name.pack(side='left', anchor='n', padx=10, pady=10)
+
         self.commonbox_var = StringVar()
         self.commonbox = ttk.Combobox(self.frame_emprestar, textvariable=self.commonbox_var)
+        self.commonbox.pack(side='left', anchor='n', padx=10, pady= 10)
         self.commonbox['values'] = self.lista
-        self.commonbox.pack()
+        dados = (self.commonbox_var, self.commonbox, self.lista)
+        self.commonbox.bind('<KeyRelease>', lambda event=None: (self.atualizar_combobox(dados), self.abrir_menu(event, self.commonbox)))
 
-        self.commonbox.bind('<KeyRelease>', lambda event=None:  (self.atualizar_combobox(), self.abrir_menu(event)))
+        label_name_aluno = Label(self.frame_emprestar, text="Aluno")
+        label_name_aluno.pack(side='left', anchor='n', padx=10, pady=10)
+
+        self.commonbox_var_aluno = StringVar()
+        self.commonbox_aluno = ttk.Combobox(self.frame_emprestar, textvariable=self.commonbox_var_aluno)
+        self.commonbox_aluno.pack(side='left', anchor='n', padx=10, pady=10)
+        self.commonbox_aluno['values'] = self.lista_aluno
+        dados2 = (self.commonbox_var_aluno, self.commonbox_aluno, self.lista_aluno)
+        self.commonbox_aluno.bind('<KeyRelease>', lambda event=None: (self.atualizar_combobox(dados2), self.abrir_menu(event, self.commonbox_aluno)))
+
+        self.treeview_emprestar = ttk.Treeview(self.frame_emprestar, columns=("Nome", "Nome do livro", "Serie", "Turma", "Endereço", "Devolução"), show="headings")
+
+        self.treeview_emprestar.heading("Nome", text="Nome")
+        self.treeview_emprestar.heading("Nome do livro", text="Nome do livro")
+        self.treeview_emprestar.heading("Serie", text="Série")
+        self.treeview_emprestar.heading("Turma", text="Turma")
+        self.treeview_emprestar.heading("Endereço", text="Endereço")
+        self.treeview_emprestar.heading("Devolução", text="Devolução")
+
+        self.treeview_emprestar.pack(side='bottom', padx=10, pady=10)
+
+    def atualizar_combobox(self, dados):
+        var = dados[0]
+        commonbox = dados[1]
+        lista = dados[2]  # Corrigido para índice 2
+
+        texto = var.get().lower()
+        livros_correspondentes = [livro for livro in lista if texto in livro.lower()]
+        commonbox['values'] = livros_correspondentes if texto else lista
+
+
+    def abrir_menu(self, event ,commonbox):
+        commonbox.event_generate('<Down>')
 
 
     def adicionar_a_lista(self):
+        try:
+            dados = self.banco_de_dados.verificar_dados('SELECT Nome FROM Livros')
+            for dado in dados:
+                item_cleaned = str(dado[0])  # Pega o primeiro elemento da tupla
+                self.lista.append(item_cleaned)  # Adiciona à lista
 
-        dados = self.banco_de_dados.verificar_dados('SELECT Nome FROM Livros')
-        for dado in dados:
-            item_cleaned = str(dado[0])  # Pega o primeiro elemento da tupla
-            self.lista.append(item_cleaned)  # Adiciona à lista
+            dados = self.banco_de_dados.verificar_dados('SELECT Nome FROM Aluno')
+            for dado in dados:
+                item_cleaned = str(dado[0])  # Pega o primeiro elemento da tupla
+                self.lista_aluno.append(item_cleaned)  # Adiciona à lista
+        except pyodbc.Error as e:
+            messagebox.showerror("Erro", f"{e}")
 
 
     def bottao_livros(self):
