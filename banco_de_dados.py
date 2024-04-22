@@ -9,7 +9,8 @@ class Dados:
         self.conexao = None
         self.command = None
         self.conectar()
-        self.add_manual()
+        #self.add_manual()
+
 
 
     def conectar(self):
@@ -26,8 +27,16 @@ class Dados:
             messagebox.showerror("Erro", f"Não foi Possivel conectar ao servidor {e}")
             return
 
-    def adicionar_livros(self, nome, autor, genero, estante, prateleira, quantidade):
+    def adicionar_livros(self, dados):
         try:
+            for dado in dados:
+
+                nome = dado[0].capitalize()
+                autor = dado[1].capitalize()
+                genero = dado[2].capitalize()
+                estante = dado[3]
+                prateleira = dado[4].capitalize()
+                quantidade = dado[5]
 
             if not nome or not autor or not genero or not estante or not prateleira or not quantidade:
                 messagebox.showerror("ERRO", "Preencha todos os campos")
@@ -40,23 +49,30 @@ class Dados:
                 self.rodar_comandos_add(self.command)
                 messagebox.showinfo("Adicionado com sucesso")
         except Exception as e:
-            messagebox.showerror("ERRO", f"{e}")
+            messagebox.showerror("ERRO", f"eu{e}")
 
-    def adicionar_alunos(self, nome, serie, turma, sala, endereco):
+    def adicionar_alunos(self, aluno):
         try:
-            if not nome or not serie or not turma or not sala or not endereco:
+            nome = aluno[0]
+            serie = aluno[1]
+            turma = aluno[2]
+            sala = aluno[3]
+            endereco = aluno[4]
+            adm = aluno[5]
+
+            if not nome or not serie or not turma or not sala or not endereco or not adm:
                 messagebox.showerror("ERRO", "Preencha todos os campos")
                 return
 
             self.command = f"""INSERT INTO Aluno (Nome, Serie, Turma, Sala, Endereço, ADM)
                                 VALUES
                                ('{nome}', '{serie}', '{turma}', {sala},'{endereco}','NOT')"""
+
             self.rodar_comandos_add(self.command)
+
             messagebox.showinfo("!!!", "concluido")
 
         except pyodbc.Error as e:
-            messagebox.showerror("ERRO", f"{e}")
-        except Exception as e:
             messagebox.showerror("ERRO", f"{e}")
 
     def emprestar_livro(self, nome, serie, turma, sala, livro):
@@ -109,86 +125,36 @@ class Dados:
             messagebox.showerror("ERRO", f"{e}")
 
     def add_manual(self):
-        livros = [
-            ("Dom Quixote", "Miguel de Cervantes", "Romance", 1, 'A', 8),
-            ("1984", "George Orwell", "Ficção Científica", 2, 'B', 5),
-            ("Orgulho e Preconceito", "Jane Austen", "Romance Clássico", 3, 'C', 6),
-            ("O Senhor dos Anéis", "J.R.R. Tolkien", "Fantasia", 4, 'D', 7),
-            ("Cem Anos de Solidão", "Gabriel García Márquez", "Realismo Mágico", 5, 'E', 4),
-            ("Crime e Castigo", "Fiódor Dostoiévski", "Romance Psicológico", 6, 'F', 3),
-            ("Harry Potter e a Pedra Filosofal", "J.K. Rowling", "Fantasia", 7, 'A', 9),
-            ("A Revolução dos Bichos", "George Orwell", "Ficção Política", 8, 'B', 4),
-            ("O Pequeno Príncipe", "Antoine de Saint-Exupéry", "Literatura Infantojuvenil", 9, 'C', 10),
-            ("O Grande Gatsby", "F. Scott Fitzgerald", "Romance", 10, 'D', 6),
-            ("A Arte da Guerra", "Sun Tzu", "Filosofia Militar", 11, 'E', 5),
-            ("A Metamorfose", "Franz Kafka", "Ficção Absurda", 12, 'F', 7),
-            ("O Hobbit", "J.R.R. Tolkien", "Fantasia", 13, 'A', 6),
-            ("Anna Karenina", "Liev Tolstói", "Romance", 14, 'B', 8),
-            ("Ulisses", "James Joyce", "Modernismo", 15, 'C', 4),
-            ("O Morro dos Ventos Uivantes", "Emily Brontë", "Romance Gótico", 16, 'D', 6),
-            ("Moby Dick", "Herman Melville", "Aventura", 17, 'E', 3),
-            ("O Apanhador no Campo de Centeio", "J.D. Salinger", "Ficção", 18, 'F', 6),
-            ("O Retrato de Dorian Gray", "Oscar Wilde", "Gótico", 19, 'A', 7),
-            ("O Sol é para Todos", "Harper Lee", "Ficção", 20, 'B', 5),
-            ("As Crônicas de Nárnia", "C.S. Lewis", "Fantasia", 1, 'C', 9),
-            ("A Revolta de Atlas", "Ayn Rand", "Romance Filosófico", 2, 'D', 4),
-            ("O Nome do Vento", "Patrick Rothfuss", "Fantasia", 3, 'E', 8),
-            ("O Código Da Vinci", "Dan Brown", "Suspense", 4, 'F', 3),
-            ("A Ilíada", "Homero", "Épico", 5, 'A', 5),
-            ("A Odisséia", "Homero", "Épico", 6, 'B', 6),
-            ("O Estrangeiro", "Albert Camus", "Filosofia Existencialista", 7, 'C', 7),
-            ("O Leão, a Feiticeira e o Guarda-Roupa", "C.S. Lewis", "Fantasia", 8, 'D', 8),
-            ("O Cão dos Baskervilles", "Arthur Conan Doyle", "Mistério", 9, 'E', 9),
-            ("O Conde de Monte Cristo", "Alexandre Dumas", "Aventura", 10, 'F', 5),
-            ("A Sangue Frio", "Truman Capote", "Romance Criminal", 11, 'A', 6),
-            ("O Processo", "Franz Kafka", "Ficção Filosófica", 12, 'B', 7),
-            ("O Labirinto dos Espíritos", "Carlos Ruiz Zafón", "Mistério", 13, 'C', 8),
-            ("O Vermelho e o Negro", "Stendhal", "Romance", 14, 'D', 9),
-            ("O Lobo do Mar", "Jack London", "Aventura", 15, 'E', 10),
-            ("A Divina Comédia", "Dante Alighieri", "Épico", 16, 'F', 6),
-            ("Os Irmãos Karamazov", "Fiódor Dostoiévski", "Filosofia", 17, 'A', 8),
-            ("O Conquistador", "William Faulkner", "Romance", 18, 'B', 7),
-            ("As Vinhas da Ira", "John Steinbeck", "Romance Social", 19, 'C', 6),
-            ("O Velho e o Mar", "Ernest Hemingway", "Ficção", 20, 'D', 5),
-            ("Grande Sertão: Veredas", "João Guimarães Rosa", "Ficção", 1, 'E', 10),
-            ("O Médico e o Monstro", "Robert Louis Stevenson", "Gótico", 2, 'F', 11),
-            ("A Revolta de Atlas", "Ayn Rand", "Romance Filosófico", 3, 'A', 9),
-            ("A Sangue Frio", "Truman Capote", "Romance Criminal", 4, 'B', 8),
-            ("O Retrato de Dorian Gray", "Oscar Wilde", "Gótico", 5, 'C', 7),
-            ("O Estrangeiro", "Albert Camus", "Filosofia Existencialista", 6, 'D', 6),
-            ("A Metamorfose", "Franz Kafka", "Ficção Absurda", 7, 'E', 5),
-            ("O Apanhador no Campo de Centeio", "J.D. Salinger", "Ficção", 8, 'F', 4),
-            ("O Cão dos Baskervilles", "Arthur Conan Doyle", "Mistério", 9, 'A', 3),
-            ("O Conde de Monte Cristo", "Alexandre Dumas", "Aventura", 10, 'B', 2),
-            ("O Sol é para Todos", "Harper Lee", "Ficção", 11, 'C', 1),
-            ("O Grande Gatsby", "F. Scott Fitzgerald", "Romance", 12, 'D', 2),
-            ("O Código Da Vinci", "Dan Brown", "Suspense", 13, 'E', 3),
-            ("A Arte da Guerra", "Sun Tzu", "Filosofia Militar", 14, 'F', 4),
-            ("A Metamorfose", "Franz Kafka", "Ficção Absurda", 15, 'A', 5),
-            ("O Hobbit", "J.R.R. Tolkien", "Fantasia", 16, 'B', 6),
-            ("Anna Karenina", "Liev Tolstói", "Romance", 17, 'C', 7),
-            ("Ulisses", "James Joyce", "Modernismo", 18, 'D', 8),
-            ("O Morro dos Ventos Uivantes", "Emily Brontë", "Romance Gótico", 19, 'E', 9),
-            ("Moby Dick", "Herman Melville", "Aventura", 20, 'F', 10),
-            ("A Guerra dos Tronos", "George R.R. Martin", "Fantasia", 1, 'A', 10),
-            ("A Fúria dos Reis", "George R.R. Martin", "Fantasia", 2, 'A', 9),
-            ("A Tormenta de Espadas", "George R.R. Martin", "Fantasia", 3, 'A', 8),
-            ("O Festim dos Corvos", "George R.R. Martin", "Fantasia", 4, 'A', 7),
-            ("A Dança dos Dragões", "George R.R. Martin", "Fantasia", 5, 'A', 6),
-            ("Os Ventos do Inverno", "George R.R. Martin", "Fantasia", 6, 'A', 5),
-            ("Um Sonho de Primavera", "George R.R. Martin", "Fantasia", 7, 'A', 4),
-            ("Fogo & Sangue", "George R.R. Martin", "História Fictícia", 8, 'B', 8),
-            ("A Princesa e a Rainha", "George R.R. Martin", "História Fictícia", 9, 'B', 7),
-            ("O Príncipe de Westeros e Outras Histórias", "George R.R. Martin", "História Fictícia", 10, 'B', 6),
-            ("Os Filhos do Dragão", "George R.R. Martin", "História Fictícia", 11, 'B', 5)
+        alunos = [
+            ("João", "1", 'A', 10, "Rua A - 123", 'NOT'),
+            ("Maria", "2", 'B', 15, "Rua B - 456", 'NOT'),
+            ("Pedro", "3", 'C', 20, "Rua C - 789", 'NOT'),
+            ("Ana", "1", 'D', 25, "Rua D - 1011", 'NOT'),
+            ("Lucas", "2", 'E', 30, "Rua E - 1213", 'NOT'),
+            ("Mariana", "3", 'F', 35, "Rua F - 1415", 'NOT'),
+            ("Carlos", "1", 'A', 5, "Rua G - 1617", 'NOT'),
+            ("Juliana", "2", 'B', 12, "Rua H - 1819", 'NOT'),
+            ("Gabriel", "3", 'C', 18, "Rua I - 2021", 'NOT'),
+            ("Luiza", "1", 'D', 22, "Rua J - 2223", 'NOT'),
+            ("Rafael", "2", 'E', 27, "Rua K - 2425", 'NOT'),
+            ("Fernanda", "3", 'F', 32, "Rua L - 2627", 'NOT'),
+            ("Matheus", "1", 'A', 8, "Rua M - 2829", 'NOT'),
+            ("Larissa", "2", 'B', 14, "Rua N - 3031", 'NOT'),
+            ("Diego", "3", 'C', 19, "Rua O - 3233", 'NOT'),
+            ("Amanda", "1", 'D', 24, "Rua P - 3435", 'NOT'),
+            ("Vinícius", "2", 'E', 29, "Rua Q - 3637", 'NOT'),
+            ("Camila", "3", 'F', 34, "Rua R - 3839", 'NOT'),
+            ("Bruno", "1", 'A', 9, "Rua S - 4041", 'NOT'),
+            ("Isabela", "2", 'B', 16, "Rua T - 4243", 'NOT'),
+            ("Luciana", "1", 'C', 11, "Rua U - 4445", 'NOT'),
+            ("Ricardo", "3", 'D', 28, "Rua V - 4647", 'NOT'),
+            ("Beatriz", "2", 'E', 17, "Rua W - 4849", 'NOT'),
+            ("Marcos", "1", 'F', 23, "Rua X - 5051", 'NOT'),
+            ("Fernando", "3", 'A', 36, "Rua Y - 5253", 'NOT'),
+            ("Carla", "2", 'B', 13, "Rua Z - 5455", 'NOT'),
+            ("Jefferson Vitena", "2", "B", 11, "Rua Tres portoes, 130", "ADM"),
+            ("Monique Marinho", "2", "B", 11, "Humildes, 130", "NOT")
 
         ]
-        for livro in livros:
-            nome = livro[0]
-            autor = livro[1]
-            genero = livro[2]
-            estante = livro[3]
-            prateleira = livro[4]
-            quantidade = livro[5]
-            self.adicionar_livros(nome, autor, genero, estante, prateleira, quantidade)
-            print('ok')
+        for aluno in alunos:
+            self.adicionar_alunos(aluno)

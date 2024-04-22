@@ -192,29 +192,25 @@ class MinhaApp:
 
     def adicionar_livros(self):
         try:
-            nome = self.entry_name.get()
-            autor = self.entry_autor.get()
-            genero = self.entry_genero.get()
-            estante = self.entry_estante.get()
-            prateleira = self.entry_prateleira.get()
-            quantidade = self.entry_quantidade.get()
+            dados = [(self.entry_name.get(), self.entry_autor.get(), self.entry_genero.get(), self.entry_estante.get(),
+                      self.entry_prateleira.get(), self.entry_quantidade.get())]
+            print(dados)
 
-            self.banco_de_dados.adicionar_livros(nome, autor, genero, estante, prateleira, quantidade)
+            self.banco_de_dados.adicionar_livros(dados)
+
             self.adicionar_dados_tv('SELECT * FROM Livros', self.treeview_livros)
 
         except Exception as e:
-            messagebox.showerror("ERRO", f"{e}")
+            messagebox.showerror("ERRO", f"aqui{e}")
 
 
     def adicionar_aluno(self):
         try:
-            nome = self.entry_name_aluno.get()
-            serie = self.entry_serie_aluno.get()
-            turma = self.entry_turma_aluno.get()
-            sala = self.entry_sala_aluno.get()
-            endereco = self.entry_endereco_aluno.get()
+            alunos = (self.entry_name_aluno.get(), self.entry_serie_aluno.get(), self.entry_turma_aluno.get(),
+                       self.entry_sala_aluno.get(), self.entry_endereco_aluno.get())
 
-            self.banco_de_dados.adicionar_alunos(nome, serie, turma, sala, endereco)
+            self.banco_de_dados.adicionar_alunos(alunos)
+
             self.adicionar_dados_tv('SELECT * FROM Aluno', self.treeview_aluno)
 
         except Exception as e:
