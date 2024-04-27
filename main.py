@@ -10,6 +10,7 @@ from banco_de_dados import Dados
 
 class MinhaApp:
     def __init__(self):
+        self.lista_dados = None
         self.lista = ['',]
         self.lista_aluno = ['',]
         self.janela = Tk()
@@ -19,11 +20,34 @@ class MinhaApp:
         self.banco_de_dados = Dados()
         self.frames()
         self.livros()
+        self.login()
         #self.aluno()
         self.emprestar()
 
 
         self.janela.mainloop()
+
+    def login(self):
+
+        login = Tk()
+        login.title("Login")
+
+        # nome
+        label_nome = Label(login, text="USUARIO")
+        label_nome.grid(row=0, column=0, padx=0, pady=10)
+
+        entry_nome = Entry(login)
+        entry_nome.grid(row=0, column=1, padx=0, pady=10)
+
+        # senha
+        label_senha = Label(login, text="SENHA")
+        label_senha.grid(row=1, column=0, padx=10, pady=10)
+
+        entry_senha = Entry(login)
+        entry_senha.grid(row=1, column=1, padx=10, pady=10)
+
+        button = Button(login, text="OK", width=10)
+        button.grid(row=2, column=0, padx=10, pady=10)
 
     def frames(self):
         self.frame_tv = Frame(self.janela, bg=self.preto, width=900, height=550)
@@ -86,33 +110,8 @@ class MinhaApp:
         self.adicionar_a_lista()
         self.frame_emprestar = Toplevel(self.frame_tv)
 
-        label_name = Label(self.frame_emprestar,text="livro")
-        label_name.pack(side='left', anchor='n', padx=10, pady=10)
-
-        self.commonbox_var = StringVar()
-        self.commonbox = ttk.Combobox(self.frame_emprestar, textvariable=self.commonbox_var)
-        self.commonbox.pack(side='left', anchor='n', padx=10, pady= 10)
-        self.commonbox['values'] = self.lista
-        dados = (self.commonbox_var, self.commonbox, self.lista)
-        self.commonbox.bind('<KeyRelease>', lambda event=None: (self.atualizar_combobox(dados), self.abrir_menu(event, self.commonbox)))
-
-        self.commonbox.bind("<<ComboboxSelected>>", self.evento_clicar_botao)
-
-        label_name_aluno = Label(self.frame_emprestar, text="Aluno")
-        label_name_aluno.pack(side='left', anchor='n', padx=10, pady=10)
-
-        self.commonbox_var_aluno = StringVar()
-        self.commonbox_aluno = ttk.Combobox(self.frame_emprestar, textvariable=self.commonbox_var_aluno)
-        self.commonbox_aluno.pack(side='left', anchor='n', padx=10, pady=10)
-        self.commonbox_aluno['values'] = self.lista_aluno
-
-        dados2 = (self.commonbox_var_aluno, self.commonbox_aluno, self.lista_aluno)
-
-        self.commonbox_aluno.bind('<KeyRelease>', lambda event=None: (self.atualizar_combobox(dados2), self.abrir_menu(event, self.commonbox_aluno)))
-        self.commonbox_aluno.bind("<<ComboboxSelected>>", self.evento_clicar_botao)
-
-
-        self.treeview_emprestar = ttk.Treeview(self.frame_emprestar, columns=("Nome do livro", "Nome", "Serie", "Turma", "Endereço", "Devolução"), show="headings")
+        self.treeview_emprestar = ttk.Treeview(self.frame_emprestar, columns=(
+            "Nome do livro", "Nome", "Serie", "Turma", "Endereço", "Devolução"), show="headings")
 
         self.treeview_emprestar.heading("Nome do livro", text="Nome do livro")
         self.treeview_emprestar.heading("Nome", text="Nome")
@@ -121,17 +120,73 @@ class MinhaApp:
         self.treeview_emprestar.heading("Endereço", text="Endereço")
         self.treeview_emprestar.heading("Devolução", text="Devolução")
 
-        self.treeview_emprestar.pack(side='bottom', padx=10, pady=10)
+        self.treeview_emprestar.grid(row=0, column=0, columnspan=2, padx=10, pady=10)
+
+        label_name = Label(self.frame_emprestar, text="Livro")
+        label_name.grid(row=1, column=0, padx=10, pady=10, sticky="e")
+
+        self.commonbox_var = StringVar()
+        self.commonbox = ttk.Combobox(self.frame_emprestar, textvariable=self.commonbox_var)
+        self.commonbox.grid(row=1, column=1, padx=10, pady=10, sticky="w")
+        self.commonbox['values'] = self.lista
+        dados = (self.commonbox_var, self.commonbox, self.lista)
+        self.commonbox.bind('<KeyRelease>',
+                            lambda event=None: (self.atualizar_combobox(dados), self.abrir_menu(event, self.commonbox)))
+        self.commonbox.bind("<<ComboboxSelected>>", self.evento_clicar_botao)
+
+        label_name_aluno = Label(self.frame_emprestar, text="Aluno")
+        label_name_aluno.grid(row=2, column=0, padx=10, pady=10, sticky="e")
+
+        self.commonbox_var_aluno = StringVar()
+        self.commonbox_aluno = ttk.Combobox(self.frame_emprestar, textvariable=self.commonbox_var_aluno)
+        self.commonbox_aluno.grid(row=2, column=1, padx=10, pady=10, sticky="w")
+        self.commonbox_aluno['values'] = self.lista_aluno
+
+        dados2 = (self.commonbox_var_aluno, self.commonbox_aluno, self.lista_aluno)
+
+        self.commonbox_aluno.bind('<KeyRelease>', lambda event=None: (
+        self.atualizar_combobox(dados2), self.abrir_menu(event, self.commonbox_aluno)))
+        self.commonbox_aluno.bind("<<ComboboxSelected>>", self.evento_clicar_botao)
+
+        self.button_add = Button(self.frame_emprestar, text="Emprestar", command=lambda:self.enprestar_add(self.lista_dados))
+        self.button_add.grid(row=3, column=0, padx=10, pady=10, sticky="e")
+
+    def enprestar_add(self, comand):
+        try:
+            if not self.lista_dados:
+                messagebox.showerror("Erro","Adicine os dados")
+            else:
+                lista = "nome,livro, serie, turma, endereco, data_devolucao_formatada"
+                print(comand)
+                print(len(comand))
+                nome = comand[1]
+                livro = comand[0]
+                serie = comand[2]
+                turma = comand[3]
+                endereco = comand[4]
+                data = comand[5]
+                data_dev = comand[6]
+
+                command = f"""INSERT INTO Emprestimo (Aluno, Namelivro, Serie, Turma, Dataemprestimo, Datadevolucao, devolvido, Endereço)
+                                                    VALUES
+                                             ('{nome}', '{livro}', '{serie}', '{turma}','{data_dev}','{data}', 'NOT', '{endereco}')"""
+
+                self.banco_de_dados.rodar_comandos_add(command)
+
+        except Exception as e:
+            messagebox.showerror("Erro", f"{e}")
+            return
 
     def evento_clicar_botao(self, event):
         try:
             # Chamar os métodos para obter os dados necessários
             dados = self.item_selecionado()
             dados2 = self.item_selecionado_alunos()
-            print(dados[0])
-            print(dados2[0])
+
             # Adicionar os dados à treeview
             self.adicionar_dados_tv_emprestar(dados, dados2[0])
+        except IndexError:
+            pass
 
         except Exception as e:
             messagebox.showerror("Erro", f"{e}")
@@ -162,8 +217,7 @@ class MinhaApp:
     def adicionar_dados_tv_emprestar(self, dados, dados2):
         try:
             # Verificar se os dados estão disponíveis antes de prosseguir
-            print(len(dados[0]))
-            print(len(dados2[0]))
+
             if dados and dados2:
                 # Extrair os dados do primeiro resultado (dados2) para o livro
                 livro = dados[0][0]
@@ -176,22 +230,21 @@ class MinhaApp:
                 # Calcular a data de devolução
                 data_devolucao = datetime.datetime.now() + datetime.timedelta(weeks=1)
                 data_devolucao_formatada = data_devolucao.strftime("%d/%m/%Y")
-
+                data = datetime.datetime.now().strftime("%d/%m/%Y")
                 # Criar a lista de dados a serem inseridos na treeview
-                lista = (livro, nome, serie, turma, endereco, data_devolucao_formatada)
+                self.lista_dados = (livro, nome, serie, turma, endereco, data_devolucao_formatada, data)
 
                 # Limpar a treeview antes de adicionar os novos dados
                 self.treeview_emprestar.delete(*self.treeview_emprestar.get_children())
 
                 # Converter os itens da lista para strings
-                item_cleaned = [str(x) for x in lista]
+                item_cleaned = [str(x) for x in self.lista_dados]
 
                 # Inserir os dados na treeview
                 self.treeview_emprestar.insert("", "end", values=item_cleaned)
 
-        except Exception as e:
-            messagebox.showerror("Erro", f"{e}")
-            print(e)
+        except IndexError:
+            pass
 
 
     def atualizar_combobox(self, dados):

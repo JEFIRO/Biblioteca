@@ -113,6 +113,7 @@ class Dados:
             messagebox.showerror("ERRO", f"{e}")
         except Exception as e:
             messagebox.showerror("ERRO", f"{e}")
+            print(e)
 
     def verificar_dados(self, command):
         try:
