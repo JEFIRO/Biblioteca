@@ -33,21 +33,32 @@ class MinhaApp:
         login.title("Login")
 
         # nome
-        label_nome = Label(login, text="USUARIO")
-        label_nome.grid(row=0, column=0, padx=0, pady=10)
+        self.label_nome_ADM = Label(login, text="USUARIO")
+        self.label_nome_ADM.grid(row=0, column=0, padx=0, pady=10)
 
-        entry_nome = Entry(login)
-        entry_nome.grid(row=0, column=1, padx=0, pady=10)
+        self.entry_nome_ADM = Entry(login)
+        self.entry_nome_ADM.grid(row=0, column=1, padx=0, pady=10)
 
         # senha
-        label_senha = Label(login, text="SENHA")
-        label_senha.grid(row=1, column=0, padx=10, pady=10)
+        self.label_senha_ADM = Label(login, text="SENHA")
+        self.label_senha_ADM.grid(row=1, column=0, padx=10, pady=10)
 
-        entry_senha = Entry(login)
-        entry_senha.grid(row=1, column=1, padx=10, pady=10)
+        self.entry_senha_ADM = Entry(login)
+        self.entry_senha_ADM.grid(row=1, column=1, padx=10, pady=10)
 
-        button = Button(login, text="OK", width=10)
+        button = Button(login, text="OK", width=10,command=self.verifica)
         button.grid(row=2, column=0, padx=10, pady=10)
+    
+
+    def verifica(self):
+        comando = (self.entry_nome_ADM.get(), self.entry_senha_ADM.get())
+
+        verificador = self.banco_de_dados.e_adm(comando)
+
+        if verificador:
+            self.aluno()
+        else:
+            messagebox.showerror("ERRO","Você não tem permição")
 
     def frames(self):
         self.frame_tv = Frame(self.janela, bg=self.preto, width=900, height=550)

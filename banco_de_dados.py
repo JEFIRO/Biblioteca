@@ -125,6 +125,26 @@ class Dados:
         except pyodbc.Error as e:
             messagebox.showerror("ERRO", f"{e}")
 
+    def e_adm(self, dados):
+        try:
+            if not dados:
+                messagebox.showerror("ERRO", f"preencha os campos")
+                return
+
+            else:
+
+                nome = dados[0]
+                senha = dados[1]
+
+                comando = f"SELECT * FROM Aluno WHERE Senha = '{senha}'AND Nome = '{nome}' AND ADM = 'ADM';"
+
+                verificar = self.verificar_dados(comando)
+
+                return verificar
+
+        except pyodbc.Error as e:
+            messagebox.showerror("ERRO", f"{e}")
+
     def add_manual(self):
         alunos = [
             ("João", "1", 'A', 10, "Rua A - 123", 'NOT'),
