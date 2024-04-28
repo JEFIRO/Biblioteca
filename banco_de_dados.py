@@ -11,8 +11,6 @@ class Dados:
         self.conectar()
         #self.add_manual()
 
-
-
     def conectar(self):
         try:
             self.dados_De_conexao = (
@@ -27,16 +25,15 @@ class Dados:
             messagebox.showerror("Erro", f"Não foi Possivel conectar ao servidor {e}")
             return
 
-    def adicionar_livros(self, dados):
+    def adicionar_livros(self, dado):
         try:
-            for dado in dados:
 
-                nome = dado[0].capitalize()
-                autor = dado[1].capitalize()
-                genero = dado[2].capitalize()
-                estante = dado[3]
-                prateleira = dado[4].capitalize()
-                quantidade = dado[5]
+            nome = dado[0].capitalize()
+            autor = dado[1].capitalize()
+            genero = dado[2].capitalize()
+            estante = dado[3]
+            prateleira = dado[4].capitalize()
+            quantidade = dado[5]
 
             if not nome or not autor or not genero or not estante or not prateleira or not quantidade:
                 messagebox.showerror("ERRO", "Preencha todos os campos")
@@ -47,9 +44,9 @@ class Dados:
                             VALUES
                                    ('{nome}', '{autor}', '{genero}', '{estante}','{prateleira}',{quantidade})"""
                 self.rodar_comandos_add(self.command)
-                messagebox.showinfo("Adicionado com sucesso")
+
         except Exception as e:
-            messagebox.showerror("ERRO", f"eu{e}")
+            messagebox.showerror("ERRO", f"eu {e}")
 
     def adicionar_alunos(self, aluno):
         try:
@@ -58,19 +55,16 @@ class Dados:
             turma = aluno[2]
             sala = aluno[3]
             endereco = aluno[4]
-            adm = aluno[5]
 
-            if not nome or not serie or not turma or not sala or not endereco or not adm:
+            if not nome or not serie or not turma or not sala or not endereco:
                 messagebox.showerror("ERRO", "Preencha todos os campos")
                 return
 
-            self.command = f"""INSERT INTO Aluno (Nome, Serie, Turma, Sala, Endereço, ADM)
+            self.command = f"""INSERT INTO Aluno (Nome, Serie, Turma, Sala, Endereço, ADM, Senha)
                                 VALUES
-                               ('{nome}', '{serie}', '{turma}', {sala},'{endereco}','NOT')"""
+                               ('{nome}', '{serie}', '{turma}', {sala},'{endereco}','NOT', '')"""
 
             self.rodar_comandos_add(self.command)
-
-            messagebox.showinfo("!!!", "concluido")
 
         except pyodbc.Error as e:
             messagebox.showerror("ERRO", f"{e}")
@@ -113,7 +107,6 @@ class Dados:
             messagebox.showerror("ERRO", f"{e}")
         except Exception as e:
             messagebox.showerror("ERRO", f"{e}")
-            print(e)
 
     def verificar_dados(self, command):
         try:
@@ -144,6 +137,23 @@ class Dados:
 
         except pyodbc.Error as e:
             messagebox.showerror("ERRO", f"{e}")
+
+    def esta_disponivel(self, dados):
+        try:
+            if not dados:
+                messagebox.showerror("ERRO", f"preencha os campos")
+                return
+            else:
+
+                comando = f"SELECT Quantidade FROM Livros WHERE Nome = '{dados}';"
+                print(dados)
+                verificar = self.verificar_dados(comando)
+                return verificar
+
+
+        except pyodbc.Error as e :
+            messagebox.showerror("ERRO", f"{e}")
+
 
     def add_manual(self):
         alunos = [

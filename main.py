@@ -1,54 +1,61 @@
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
-import datetime
-
 import pyodbc
-
 from banco_de_dados import Dados
+from funçoes import Funcoes
 
 
 class MinhaApp:
     def __init__(self):
-        self.lista_dados = None
         self.lista = ['',]
         self.lista_aluno = ['',]
-        self.janela = Tk()
-        self.janela.title("Biblioteca")
-        self.janela.geometry('1050x568')
-        self.preto = 'black'
+
         self.banco_de_dados = Dados()
-        self.frames()
-        self.livros()
+        self.funcao = Funcoes()
+
         self.login()
-        #self.aluno()
-        self.emprestar()
+        self.logi.mainloop()
 
-
-        self.janela.mainloop()
+    # Login
 
     def login(self):
 
-        login = Tk()
-        login.title("Login")
+        self.logi = Tk()
+        self.logi.title("Login")
 
         # nome
-        self.label_nome_ADM = Label(login, text="USUARIO")
+        self.label_nome_ADM = Label(self.logi, text="USUARIO")
         self.label_nome_ADM.grid(row=0, column=0, padx=0, pady=10)
 
-        self.entry_nome_ADM = Entry(login)
+        self.entry_nome_ADM = Entry(self.logi)
         self.entry_nome_ADM.grid(row=0, column=1, padx=0, pady=10)
 
         # senha
-        self.label_senha_ADM = Label(login, text="SENHA")
+        self.label_senha_ADM = Label(self.logi, text="SENHA")
         self.label_senha_ADM.grid(row=1, column=0, padx=10, pady=10)
 
-        self.entry_senha_ADM = Entry(login)
+        self.entry_senha_ADM = Entry(self.logi, show="#")
         self.entry_senha_ADM.grid(row=1, column=1, padx=10, pady=10)
 
-        button = Button(login, text="OK", width=10,command=self.verifica)
+        button = Button(self.logi, text="OK", width=10, command=self.verifica)
         button.grid(row=2, column=0, padx=10, pady=10)
-    
+
+    def opcoes(self):
+
+        self.logi.withdraw()
+
+        self.opcoes_frame = Toplevel(self.logi)
+        self.opcoes_frame.title("Opções")
+
+        butao_livros = Button(self.opcoes_frame, text="Adicionar Livros", command=self.livros, width=20)
+        butao_livros.grid(row=0, column=0, padx=20, pady=30)
+
+        butao_aluno = Button(self.opcoes_frame, text="Adicionar Alunos", command=self.aluno, width=20)
+        butao_aluno.grid(row=0, column=1, padx=5, pady=30)
+
+        butao_emprestar = Button(self.opcoes_frame, text="Emprestar Livros", command=self.emprestar, width=20)
+        butao_emprestar.grid(row=0, column=2, padx=20, pady=30)
 
     def verifica(self):
         comando = (self.entry_nome_ADM.get(), self.entry_senha_ADM.get())
@@ -56,70 +63,16 @@ class MinhaApp:
         verificador = self.banco_de_dados.e_adm(comando)
 
         if verificador:
-            self.aluno()
+            self.opcoes()
         else:
-            messagebox.showerror("ERRO","Você não tem permição")
+            messagebox.showerror("ERRO", "Você não tem permição")
 
-    def frames(self):
-        self.frame_tv = Frame(self.janela, bg=self.preto, width=900, height=550)
-        self.frame_tv.pack(side="top", fill="both", expand=True)
-
-        self.frame_butao = Frame(self.janela, bg='blue', width=90, height=218)
-        self.frame_butao.pack(side="bottom", fill="x")
-
-    def livros(self):
-
-        self.treeview_livros = ttk.Treeview(self.frame_tv, columns=("nome", "autor", "genero", "estante", "prateleira",
-                                                             "quantidade"),show="headings")
-        self.treeview_livros.heading("nome", text="Nome")
-        self.treeview_livros.heading("autor", text="Autor")
-        self.treeview_livros.heading("genero", text="Genero")
-        self.treeview_livros.heading("estante", text="Estante")
-        self.treeview_livros.heading("prateleira", text="Prateleira")
-        self.treeview_livros.heading("quantidade", text="Qt")
-
-        self.treeview_livros.column("nome", width=200)
-        self.treeview_livros.column("autor", width=150)
-        self.treeview_livros.column("genero", width=100)
-        self.treeview_livros.column("prateleira", width=60)
-        self.treeview_livros.column("quantidade", width=20)
-
-        self.treeview_livros.pack(padx=10, pady=10)
-        self.adicionar_dados_tv('SELECT * FROM Livros', self.treeview_livros)
-        self.bottao_livros()
-
-        self.scrolbar(self.frame_tv, self.treeview_livros)
-
-    def aluno(self):
-
-        self.frame_aluno = Toplevel(self.frame_tv)
-
-        self.treeview_aluno = ttk.Treeview(self.frame_aluno, columns=("nome", "serie", "turma", "sala", "endereco"), show="headings")
-
-        self.treeview_aluno.heading("nome", text="Nome")
-        self.treeview_aluno.heading("serie", text="Serie")
-        self.treeview_aluno.heading("turma", text="Turma")
-        self.treeview_aluno.heading("sala", text="Sala")
-        self.treeview_aluno.heading("endereco", text="Endereço")
-
-        self.treeview_aluno.column("nome", width=200)
-        self.treeview_aluno.column("serie", width=60)
-        self.treeview_aluno.column("turma", width=60)
-        self.treeview_aluno.column("sala", width=60)
-        self.treeview_aluno.column("endereco", width=100)
-
-        self.treeview_aluno.pack(padx=10, pady=10)
-
-        self.adicionar_dados_tv('SELECT * FROM Aluno', self.treeview_aluno)
-
-        self.bottao_alunos()
-
-        self.scrolbar(self.frame_aluno, self.treeview_aluno)
+    # Emprestar
 
     def emprestar(self):
 
         self.adicionar_a_lista()
-        self.frame_emprestar = Toplevel(self.frame_tv)
+        self.frame_emprestar = Toplevel(self.opcoes_frame)
 
         self.treeview_emprestar = ttk.Treeview(self.frame_emprestar, columns=(
             "Nome do livro", "Nome", "Serie", "Turma", "Endereço", "Devolução"), show="headings")
@@ -159,34 +112,8 @@ class MinhaApp:
         self.atualizar_combobox(dados2), self.abrir_menu(event, self.commonbox_aluno)))
         self.commonbox_aluno.bind("<<ComboboxSelected>>", self.evento_clicar_botao)
 
-        self.button_add = Button(self.frame_emprestar, text="Emprestar", command=lambda:self.enprestar_add(self.lista_dados))
+        self.button_add = Button(self.frame_emprestar, text="Emprestar", command=self.funcao.emprestar_add)
         self.button_add.grid(row=3, column=0, padx=10, pady=10, sticky="e")
-
-    def enprestar_add(self, comand):
-        try:
-            if not self.lista_dados:
-                messagebox.showerror("Erro","Adicine os dados")
-            else:
-                lista = "nome,livro, serie, turma, endereco, data_devolucao_formatada"
-                print(comand)
-                print(len(comand))
-                nome = comand[1]
-                livro = comand[0]
-                serie = comand[2]
-                turma = comand[3]
-                endereco = comand[4]
-                data = comand[5]
-                data_dev = comand[6]
-
-                command = f"""INSERT INTO Emprestimo (Aluno, Namelivro, Serie, Turma, Dataemprestimo, Datadevolucao, devolvido, Endereço)
-                                                    VALUES
-                                             ('{nome}', '{livro}', '{serie}', '{turma}','{data_dev}','{data}', 'NOT', '{endereco}')"""
-
-                self.banco_de_dados.rodar_comandos_add(command)
-
-        except Exception as e:
-            messagebox.showerror("Erro", f"{e}")
-            return
 
     def evento_clicar_botao(self, event):
         try:
@@ -195,21 +122,10 @@ class MinhaApp:
             dados2 = self.item_selecionado_alunos()
 
             # Adicionar os dados à treeview
-            self.adicionar_dados_tv_emprestar(dados, dados2[0])
+            self.funcao.adicionar_dados_tv_emprestar(dados, dados2[0], self.treeview_emprestar)
+
         except IndexError:
             pass
-
-        except Exception as e:
-            messagebox.showerror("Erro", f"{e}")
-
-    def item_selecionado_alunos(self, event=None):
-        try:
-            select = self.commonbox_aluno.get()
-
-            command = f"SELECT Nome, Serie, Turma, Endereço FROM Aluno WHERE Nome = '{select}'"
-            dados = self.banco_de_dados.verificar_dados(command)
-
-            return dados
 
         except Exception as e:
             messagebox.showerror("Erro", f"{e}")
@@ -225,52 +141,8 @@ class MinhaApp:
         except Exception as e:
             messagebox.showerror("Erro", f"{e}")
 
-    def adicionar_dados_tv_emprestar(self, dados, dados2):
-        try:
-            # Verificar se os dados estão disponíveis antes de prosseguir
-
-            if dados and dados2:
-                # Extrair os dados do primeiro resultado (dados2) para o livro
-                livro = dados[0][0]
-                # Extrair os dados do segundo resultado (dados) para o aluno
-                nome = dados2[0]  # Nome do aluno
-                serie = dados2[1]  # Série do aluno
-                turma = dados2[2]  # Turma do aluno
-                endereco = dados2[3]  # Endereço do aluno
-
-                # Calcular a data de devolução
-                data_devolucao = datetime.datetime.now() + datetime.timedelta(weeks=1)
-                data_devolucao_formatada = data_devolucao.strftime("%d/%m/%Y")
-                data = datetime.datetime.now().strftime("%d/%m/%Y")
-                # Criar a lista de dados a serem inseridos na treeview
-                self.lista_dados = (livro, nome, serie, turma, endereco, data_devolucao_formatada, data)
-
-                # Limpar a treeview antes de adicionar os novos dados
-                self.treeview_emprestar.delete(*self.treeview_emprestar.get_children())
-
-                # Converter os itens da lista para strings
-                item_cleaned = [str(x) for x in self.lista_dados]
-
-                # Inserir os dados na treeview
-                self.treeview_emprestar.insert("", "end", values=item_cleaned)
-
-        except IndexError:
-            pass
-
-
-    def atualizar_combobox(self, dados):
-        var = dados[0]
-        commonbox = dados[1]
-        lista = dados[2]  # Corrigido para índice 2
-
-        texto = var.get().lower()
-        livros_correspondentes = [livro for livro in lista if texto in livro.lower()]
-        commonbox['values'] = livros_correspondentes if texto else lista
-
-
-    def abrir_menu(self, event ,commonbox):
+    def abrir_menu(self, event,commonbox):
         commonbox.event_generate('<Down>')
-
 
     def adicionar_a_lista(self):
         try:
@@ -286,6 +158,39 @@ class MinhaApp:
         except pyodbc.Error as e:
             messagebox.showerror("Erro", f"{e}")
 
+    # Livro
+
+    def livros(self):
+        livros = Toplevel(self.opcoes_frame)
+
+        self.frame_tv = Frame(livros, bg="black", width=900, height=550)
+        self.frame_tv.pack(side="top", fill="both", expand=True)
+
+        self.frame_butao = Frame(livros, bg='blue', width=90, height=218)
+        self.frame_butao.pack(side="bottom", fill="x")
+
+        self.treeview_livros = ttk.Treeview(self.frame_tv, columns=("nome", "autor", "genero", "estante", "prateleira",
+                                                             "quantidade"),show="headings")
+        self.treeview_livros.heading("nome", text="Nome")
+        self.treeview_livros.heading("autor", text="Autor")
+        self.treeview_livros.heading("genero", text="Genero")
+        self.treeview_livros.heading("estante", text="Estante")
+        self.treeview_livros.heading("prateleira", text="Prateleira")
+        self.treeview_livros.heading("quantidade", text="Qt")
+
+        self.treeview_livros.column("nome", width=200)
+        self.treeview_livros.column("autor", width=150)
+        self.treeview_livros.column("genero", width=100)
+        self.treeview_livros.column("prateleira", width=60)
+        self.treeview_livros.column("quantidade", width=20)
+
+        self.treeview_livros.pack(padx=10, pady=10)
+
+        self.funcao.adicionar_dados_tv('SELECT * FROM Livros', self.treeview_livros)
+
+        self.bottao_livros()
+
+        self.scrolbar(self.frame_tv, self.treeview_livros)
 
     def bottao_livros(self):
         # label
@@ -326,15 +231,49 @@ class MinhaApp:
             self.entry_quantidade = Entry(self.frame_butao, width=5)
             self.entry_quantidade.pack(side='left', anchor='w', padx=10, pady=10)
 
-            self.adicionar_dados = Button(self.frame_butao, text='Adicionar',command=self.adicionar_livros)
+            self.adicionar_dados = Button(self.frame_butao, text='Adicionar',command=lambda: self.funcao.adicionar_livros(self.coletar_livros(), self.treeview_livros))
             self.adicionar_dados.pack(side='left', anchor='w', padx=10, pady=10)
 
             self.adicionar_aluno_tv = Button(self.frame_butao, text='Adicionar aluno', command=self.aluno)
             self.adicionar_aluno_tv.pack(side='left', anchor='w', padx=10, pady=10)
 
-
         except Exception as e:
             messagebox.showerror("ERRO", f"{e}")
+
+    def coletar_livros(self):
+
+        dados = (self.entry_name.get(), self.entry_autor.get(), self.entry_genero.get(), self.entry_estante.get(),
+                 self.entry_prateleira.get(), self.entry_quantidade.get())
+        return dados
+
+    # Aluno
+
+    def aluno(self):
+
+        self.frame_aluno = Toplevel(self.opcoes_frame)
+
+        self.treeview_aluno = ttk.Treeview(self.frame_aluno, columns=("nome", "serie", "turma", "sala", "endereco"),
+                                           show="headings")
+
+        self.treeview_aluno.heading("nome", text="Nome")
+        self.treeview_aluno.heading("serie", text="Serie")
+        self.treeview_aluno.heading("turma", text="Turma")
+        self.treeview_aluno.heading("sala", text="Sala")
+        self.treeview_aluno.heading("endereco", text="Endereço")
+
+        self.treeview_aluno.column("nome", width=200)
+        self.treeview_aluno.column("serie", width=60)
+        self.treeview_aluno.column("turma", width=60)
+        self.treeview_aluno.column("sala", width=60)
+        self.treeview_aluno.column("endereco", width=100)
+
+        self.treeview_aluno.pack(padx=10, pady=10)
+
+        self.funcao.adicionar_dados_tv('SELECT * FROM Aluno', self.treeview_aluno)
+
+        self.bottao_alunos()
+
+        self.scrolbar(self.frame_aluno, self.treeview_aluno)
 
     def bottao_alunos(self):
         try:
@@ -368,46 +307,41 @@ class MinhaApp:
             self.entry_endereco_aluno = Entry(self.frame_aluno, width=5)
             self.entry_endereco_aluno.pack(side='left', anchor='w', padx=10, pady=10)
 
-            self.adicionar_dados_aluno = Button(self.frame_aluno, text='Adiciona', command=self.adicionar_aluno)
+            self.adicionar_dados_aluno = Button(self.frame_aluno, text='Adiciona', command=lambda: self.funcao.adicionar_aluno(self.coletar(), self.treeview_aluno))
             self.adicionar_dados_aluno.pack(side='left', anchor='w', padx=10, pady=10)
 
         except Exception as e:
             messagebox.showerror("ERRO", f"{e}")
 
-    def adicionar_livros(self):
+    def coletar(self):
+        dados = (self.entry_name_aluno.get(), self.entry_serie_aluno.get(), self.entry_turma_aluno.get(),
+                 self.entry_sala_aluno.get(), self.entry_endereco_aluno.get())
+        self.adicionar_a_lista()
+        return dados
+
+    def item_selecionado_alunos(self, event=None):
         try:
-            dados = [(self.entry_name.get(), self.entry_autor.get(), self.entry_genero.get(), self.entry_estante.get(),
-                      self.entry_prateleira.get(), self.entry_quantidade.get())]
-            print(dados)
+            select = self.commonbox_aluno.get()
 
-            self.banco_de_dados.adicionar_livros(dados)
+            command = f"SELECT Nome, Serie, Turma, Endereço FROM Aluno WHERE Nome = '{select}'"
+            dados = self.banco_de_dados.verificar_dados(command)
 
-            self.adicionar_dados_tv('SELECT * FROM Livros', self.treeview_livros)
+            return dados
 
         except Exception as e:
-            messagebox.showerror("ERRO", f"aqui{e}")
+            messagebox.showerror("Erro", f"{e}")
 
+    # Geral
 
-    def adicionar_aluno(self):
-        try:
-            alunos = (self.entry_name_aluno.get(), self.entry_serie_aluno.get(), self.entry_turma_aluno.get(),
-                       self.entry_sala_aluno.get(), self.entry_endereco_aluno.get())
+    def atualizar_combobox(self, dados):
 
-            self.banco_de_dados.adicionar_alunos(alunos)
+        var = dados[0]
+        commonbox = dados[1]
+        lista = dados[2]  # Corrigido para índice 2
 
-            self.adicionar_dados_tv('SELECT * FROM Aluno', self.treeview_aluno)
-
-        except Exception as e:
-            messagebox.showerror("ERRO", f"{e}")
-            return
-
-    def adicionar_dados_tv(self, comando, treeview):
-        dados = self.banco_de_dados.verificar_dados(comando)
-        treeview.delete(*treeview.get_children())
-        for livros in dados:
-            item_cleaned = [str(x) for x in livros]
-            treeview.insert("", "end", values=item_cleaned)
-
+        texto = var.get().lower()
+        livros_correspondentes = [livro for livro in lista if texto in livro.lower()]
+        commonbox['values'] = livros_correspondentes if texto else lista
 
     def scrolbar(self, frame, tree):
 
