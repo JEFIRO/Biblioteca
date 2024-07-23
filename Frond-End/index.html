@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biblioteca</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            overflow-x: hidden; /* Para evitar rolagem horizontal */
+        }
+        header {
+            background: #333;
+            color: #fff;
+            padding: 1rem 0;
+            text-align: center;
+        }
+        .container {
+            width: calc(100% - 300px); /* Deixe espaço para a barra deslizante */
+            margin: auto;
+            overflow: hidden;
+            padding-right: 300px; /* Espaço para a barra deslizante */
+        }
+        .search-bar {
+            margin: 20px 0;
+            text-align: center;
+        }
+        .search-bar input {
+            padding: 10px;
+            width: 80%;
+            max-width: 500px;
+            margin-right: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .search-bar button {
+            padding: 10px 20px;
+            border: none;
+            background-color: #333;
+            color: #fff;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .book-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        .book-item {
+            background: #fff;
+            padding: 1rem;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: calc(33.333% - 1rem);
+            box-sizing: border-box;
+            cursor: pointer; /* Adiciona cursor de ponteiro para indicar que é clicável */
+        }
+        .book-item img {
+            max-width: 100%;
+            border-radius: 5px;
+        }
+        .book-item h2 {
+            font-size: 1.25rem;
+            margin: 0.5rem 0;
+        }
+        .book-item p {
+            margin: 0.5rem 0;
+            color: #555;
+        }
+        /* Barra deslizante */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: 0;
+            height: 100%;
+            width: 300px;
+            background-color: #fff;
+            box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            overflow-y: auto;
+        }
+        .sidebar.open {
+            transform: translateX(0);
+        }
+        .sidebar .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Biblioteca</h1>
+    </header>
+    <div class="container">
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Nome do livro">
+            <button onclick="buscarLivros()">Buscar</button>
+        </div>
+        <div class="book-list" id="book-list"></div>
+    </div>
+
+    <!-- Barra deslizante -->
+    <div id="sidebar" class="sidebar">
+        <span class="close-btn" onclick="toggleSidebar()">×</span>
+        <h2>Resultados da Pesquisa</h2>
+        <div id="search-results" class="book-list"></div>
+    </div>
+
+    <script>
+        async function fetchLivros() {
+            try {
+                const response = await fetch('http://localhost:8080/api/livros');
+                if (!response.ok) {
+                    throw new Error('Erro ao buscar livros: ' + response.statusText);
+                }
+                const livros = await response.json();
+                displayLivros(livros, 'book-list');
+            } catch (error) {
+                console.error('Erro ao buscar livros:', error);
+                alert('Não foi possível carregar a lista de livros.');
+            }
+        }
+
+        async function buscarLivros() {
+            const searchInput = document.getElementById('searchInput').value;
+            if (!searchInput) {
+                alert('Por favor, digite o nome do livro.');
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://localhost:8080/api/livros/buscar?nome=${encodeURIComponent(searchInput)}`);
+                if (!response.ok) {
+                    throw new Error('Erro ao buscar livros: ' + response.statusText);
+                }
+                const livros = await response.json();
+                displayLivros(livros, 'search-results');
+                toggleSidebar(true);
+            } catch (error) {
+                console.error('Erro ao buscar livros:', error);
+                alert('Não foi possível carregar a lista de livros.');
+            }
+        }
+
+        function displayLivros(livros, elementId) {
+            const bookListElement = document.getElementById(elementId);
+            bookListElement.innerHTML = '';
+
+            if (livros.length === 0) {
+                bookListElement.innerHTML = '<p>Nenhum livro encontrado.</p>';
+                return;
+            }
+
+            livros.forEach(livro => {
+                const bookItemElement = document.createElement('div');
+                bookItemElement.className = 'book-item';
+                bookItemElement.onclick = () => window.location.href = `book-details.html?id=${livro.id}`;
+
+                const autores = Array.isArray(livro.autores) ? livro.autores.join(', ') : livro.autores || 'Desconhecido';
+
+                bookItemElement.innerHTML = `
+                    <img src="${livro.imagemUrl || 'default-image.jpg'}" alt="${livro.titulo}">
+                    <h2>${livro.titulo}</h2>
+                    <p><strong>Autor:</strong> ${autores}</p>
+                    <p><strong>Publicação:</strong> ${livro.dataDePublicacao}</p>
+                `;
+
+                bookListElement.appendChild(bookItemElement);
+            });
+        }
+
+        function toggleSidebar(open = false) {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('open', open);
+        }
+
+        // Exibir todos os livros ao carregar a página
+        window.onload = fetchLivros;
+    </script>
+</body>
+</html>
