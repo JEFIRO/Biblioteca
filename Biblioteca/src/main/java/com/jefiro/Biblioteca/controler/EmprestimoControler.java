@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,26 +17,12 @@ public class EmprestimoControler {
     EmprestimoService service;
 
 
-    @GetMapping()
-    public List<Emprestimo> emprestimos() {
-        return service.buscarEmprestimos();
-    }
 
-    @GetMapping("/clientes")
-    public List<Cliente> clientes(){
-        return service.buscarClientes();
-    }
     @GetMapping("/livros")
-    public List<Livro> livros(){
+    public List<Livro> livros() {
         return service.buscarLivros();
     }
-    @GetMapping("/livros/buscar")
-    public List<LivroDTO> buscarLivros(@RequestParam String nome) {
-        List<LivroDTO> livro = service.c(nome).stream().map(l -> {
-            return new LivroDTO(l.titulo(),l.autores(),formatter(l.dataDePublicacao()),l.Imgem().imagem());
-        }).collect(Collectors.toList());
-        return livro;
-    }
+
 
     @GetMapping("/livros/{id}")
     public List<LivroDTODetails> livrosDetails(@PathVariable Long id){
@@ -46,8 +33,13 @@ public class EmprestimoControler {
         }).collect(Collectors.toList());
         return livro;
     }
-    @GetMapping("/livros/buscar/nome")
-    public
+    @GetMapping("/livros/buscar")
+    public List<LivroDTO> buscarLivros(@RequestParam String nome) {
+        List<LivroDTO> livro = service.buscarLivros(nome).stream().map(l -> {
+            return new LivroDTO(l.titulo(),l.autores(),formatter(l.dataDePublicacao()),l.Imgem().imagem());
+        }).collect(Collectors.toList());
+        return livro;
+    }
 
     private String formatter(String data){
         try {

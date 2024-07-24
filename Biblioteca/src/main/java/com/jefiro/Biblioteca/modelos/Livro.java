@@ -30,19 +30,26 @@ public class Livro {
 
     public Livro(VolumeInfo volume) {
         this.titulo = volume.titulo();
-        this.autores = volume.autores().get(0);
+        try{this.autores = volume.autores().get(0);} catch (NullPointerException e ){this.autores = null;}
         this.descricao = volume.descricao();
+        try {
+            DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+            DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-        DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-        DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            var date = LocalDate.parse(volume.dataDePublicacao().replace("-","/"), inputFormatter);
 
-        var date = LocalDate.parse(volume.dataDePublicacao().replace("-","/"), inputFormatter);
+            this.dataDePublicacao = date.format(outputFormatter);
 
-        this.dataDePublicacao = date.format(outputFormatter);
+        } catch (Exception e){
+            this.dataDePublicacao = volume.dataDePublicacao();
+        }
+        try{
+            this.categoria = volume.categoria().get(0);
+        }  catch (NullPointerException e ){
 
-
-        this.categoria = volume.categoria().get(0);
-        this.avaliacao = volume.avaliacao();
+        this.autores = null;
+    }
+        if (volume.avaliacao() == null) { this.avaliacao = 0.0;}else {this.avaliacao = volume.avaliacao();}
         this.numeroDePaginas = volume.numeroDePaginas();
         this.tipo = volume.tipo();
         this.imagemUrl = volume.Imgem().imagem();
