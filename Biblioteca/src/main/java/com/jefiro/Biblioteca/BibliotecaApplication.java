@@ -10,22 +10,11 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class BibliotecaApplication implements CommandLineRunner {
-    @Autowired
-    LivrosRepository repositoryLivros;
-    @Autowired
-    ClienteRepository repositoryCliente;
-    @Autowired
-    EmprestimoRepository emprestimoRepository;
+public class BibliotecaApplication  {
+
 
     public static void main(String[] args) {
         SpringApplication.run(BibliotecaApplication.class, args);
-    }
-
-    @Override
-    public void run(String... args) throws Exception {
-        Principal principal = new Principal(repositoryLivros, repositoryCliente, emprestimoRepository);
-        principal.principal();
     }
 
 }

@@ -49,7 +49,18 @@
             font-family: Arial, sans-serif;
             color: #555;
             text-decoration-line: none;
-            
+        }
+        .button-container button {
+            padding: 10px 20px;
+            border: none;
+            background-color: #333;
+            color: #fff;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .button-container button:hover {
+            background-color: #555;
         }
         
     </style>
@@ -61,7 +72,11 @@
     </header>
     <div class="container">
         <div id="book-details" class="book-details"></div>
+        <div class="button-container">
+            <button onclick="irParaEmprestimo()">Cadastrar Empréstimo</button>
+        </div>
     </div>
+    
 
     <script>
         async function fetchBookDetails(id) {
@@ -82,7 +97,14 @@
         alert('Não foi possível carregar os detalhes do livro.');
     }
 }
-
+function irParaEmprestimo() {
+            const bookId = getBookIdFromURL();
+            if (bookId) {
+                window.location.href = `emprestimo.html?livroId=${bookId}`;
+            } else {
+                alert('ID do livro não encontrado.');
+            }
+        }
 function displayBookDetails(livro) {
     const bookDetailsElement = document.getElementById('book-details');
 

@@ -1,4 +1,4 @@
-package com.jefiro.Biblioteca.modelos;
+package com.jefiro.Biblioteca.modelos.dto;
 
 
 public record LivroDTODetails(

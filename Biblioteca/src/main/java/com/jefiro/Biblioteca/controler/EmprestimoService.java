@@ -17,9 +17,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class EmprestimoService {
-    ApiService apiService = new ApiService();
-    ConverteDados converteDados = new ConverteDados();
-    List<VolumeInfo> livros = new ArrayList<>();
+
     @Autowired
     private LivrosRepository livroRepository;
 
@@ -29,24 +27,50 @@ public class EmprestimoService {
     @Autowired
     private EmprestimoRepository emprestimoRepository;
 
-    public List<Emprestimo> buscarEmprestimos() {
-        return emprestimoRepository.findAll();
-    }
-
-    public List<Cliente> buscarClientes() {
-        return clienteRepository.findAll();
-    }
 
     public List<Livro> buscarLivros() {
         return livroRepository.findAll();
     }
-    List<Livro> buncarLancamentos(){
-        return livroRepository.findTop5ByOrderByDataDePublicacaoDesc();
+
+
+    public List<Livro> buscarLivrosById(Long id) {
+        Optional<Livro> livro = livroRepository.findById(id);
+        if (livro.isPresent()) {
+            List<Livro> livros = new ArrayList<>();
+            livros.add(livro.get());
+            return livros;
+        }
+        return null;
     }
-    List<Livro> buscarTop5(){
-        return livroRepository.findTop5ByOrderByAvaliacaoDesc();
+
+    public List<VolumeInfo> buscarLivros(String nomeLivro) {
+        ApiService apiService = new ApiService();
+        ConverteDados converteDados = new ConverteDados();
+
+        // Obtém os dados da API
+        String json = apiService.querry(nomeLivro);
+        Response response = converteDados.converteDados(json, Response.class);
+
+        // Mapeia a resposta para uma lista de VolumeInfo
+        List<VolumeInfo> livros = response.items().stream()
+                .map(c -> new VolumeInfo(c.info().titulo(),
+                        c.info().autores(), c.info().descricao(), c.info().dataDePublicacao(), c.info().categoria(),
+                        c.info().avaliacao(), c.info().numeroDePaginas(), c.info().tipo(), c.info().Imgem()))
+                .collect(Collectors.toList());
+        // Salva livros no banco de dados, se existirem
+        if (!livros.isEmpty()) {
+            livros.forEach(this::salvarLivro);
+        }
+
+        return livros;
     }
-    public void salvarLivro(Livro livro){
+
+    private void salvarLivro(VolumeInfo volumeInfo) {
+        Livro livro = new Livro(volumeInfo);
+        salvarLivro(livro);
+    }
+
+    public void salvarLivro(Livro livro) {
         try {
             livroRepository.save(livro);
         } catch (DataIntegrityViolationException e) {
@@ -58,31 +82,38 @@ public class EmprestimoService {
             System.out.println("Erro ao salvar o livro: " + e.getMessage());
         }
     }
-    public List<Livro> buscarLivrosById(Long id) {
-        Optional<Livro> livro = livroRepository.findById(id);
-        if (livro.isPresent()){
-            List<Livro> livros = new ArrayList<>();
-            livros.add(livro.get());
-            return livros;
+    public void salvarCliente(Cliente cliente) {
+        try {
+            clienteRepository.save(cliente);
+        } catch (DataIntegrityViolationException e) {
+            // Logar a exceção se necessário
+            System.out.println("Tentativa de inserir um livro com dados duplicados ou violação de integridade: " + e.getMessage());
+            // Você pode optar por não fazer nada ou lidar com a situação de outra forma
+        } catch (Exception e) {
+            // Captura outras exceções, se necessário
+            System.out.println("Erro ao salvar o livro: " + e.getMessage());
         }
-        return null;
+    }
+    public void salvarEmprestimo(EmprestimoDTO emprestimoDTO){
+        var cliente = emprestimoDTO.clienteId();
+        var livro = emprestimoDTO.livroId();
+        var data = emprestimoDTO.dataDevolucao();
+
+        Optional<Livro> livroPesquisado = livroRepository.findById(livro);
+        Optional<Cliente> clientePesquisado = clienteRepository.findById(cliente);
+
+        if (livroPesquisado.isPresent() && clientePesquisado.isPresent()){
+            var clienteEncontrado = clientePesquisado.get();
+            Emprestimo emprestimo = new Emprestimo(clienteEncontrado,List.of(livroPesquisado.get()), data);
+            emprestimoRepository.save(emprestimo);
+        }
+
+    }
+    public List<Cliente> buscarCliente() {
+        return clienteRepository.findAll();
     }
 
-    public List<VolumeInfo> buscarLivros(String nomeLivro) {
-        var json = apiService.querry(nomeLivro);
-        Response response = converteDados.converteDados(json, Response.class);
-        livros = response.items().stream().map(c -> new VolumeInfo(c.info().titulo(),
-                c.info().autores(), c.info().descricao(), c.info().dataDePublicacao(), c.info().categoria(),
-                c.info().avaliacao(), c.info().numeroDePaginas(), c.info().tipo(), c.info().Imgem())).collect(Collectors.toList());
-
-        if (!livros.isEmpty()){
-            livros.stream().map(v -> {
-                Livro livro = new Livro(v);
-                salvarLivro(livro);
-                return livro;
-            }).collect(Collectors.toList());
-        }
-        return livros;
+    public List<Emprestimo> buscarEmprestimos() {
+        return emprestimoRepository.findAll();
     }
-
 }

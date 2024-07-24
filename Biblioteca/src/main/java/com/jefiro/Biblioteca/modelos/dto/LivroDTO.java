@@ -1,10 +1,11 @@
-package com.jefiro.Biblioteca.modelos;
+package com.jefiro.Biblioteca.modelos.dto;
+
 
 import java.util.List;
 
 public record LivroDTO (
         String titulo,
-        String autores,
+        List<String> autores,
         String dataDePublicacao,
         String imagemUrl
 )

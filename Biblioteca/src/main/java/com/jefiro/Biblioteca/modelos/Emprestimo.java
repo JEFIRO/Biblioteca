@@ -28,6 +28,13 @@ public class Emprestimo {
     public Emprestimo() {
     }
 
+    public Emprestimo(Cliente c, List<Livro> l, String data) {
+        this.livros = l;
+        this.cliente = c;
+        this.dataDeDevolucao = LocalDate.parse(data);
+        this.dataDeEmprestimo = LocalDate.now();
+    }
+
     public Emprestimo(Long id, LocalDate dataDeEmprestimo, LocalDate dataDeDevolucao, Cliente cliente, List<Livro> livros) {
         this.id = id;
         this.dataDeEmprestimo = dataDeEmprestimo;

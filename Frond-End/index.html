@@ -44,6 +44,12 @@
             border-radius: 5px;
             cursor: pointer;
         }
+        .search-bar .button-container {
+            margin-top: 10px;
+        }
+        .search-bar .button-container button {
+            margin: 0 5px;
+        }
         .book-list {
             display: flex;
             flex-wrap: wrap;
@@ -105,6 +111,9 @@
         <div class="search-bar">
             <input type="text" id="searchInput" placeholder="Nome do livro">
             <button onclick="buscarLivros()">Buscar</button>
+            <div class="button-container">
+                <button onclick="window.location.href='cadastro-cliente.html'">Cadastrar Cliente</button>
+            </div>
         </div>
         <div class="book-list" id="book-list"></div>
     </div>
