@@ -4,66 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detalhes do Livro</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-        }
-        .container {
-            width: 80%;
-            margin: auto;
-            overflow: hidden;
-            padding: 2rem 0;
-        }
-        header {
-            background: #333;
-            color: #fff;
-            padding: 1rem 0;
-            text-align: center;
-        }
-        .book-details {
-            background: #fff;
-            padding: 2rem;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .book-details img {
-            max-width: 300px;
-            border-radius: 5px;
-            margin-bottom: 2rem;
-        }
-        .book-details h2 {
-            font-size: 2rem;
-            margin: 1rem 0;
-        }
-        .book-details p {
-            margin: 1rem 0;
-            color: #555;
-        }
-        .Homer{
-            font-family: Arial, sans-serif;
-            color: #555;
-            text-decoration-line: none;
-        }
-        .button-container button {
-            padding: 10px 20px;
-            border: none;
-            background-color: #333;
-            color: #fff;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1rem;
-        }
-        .button-container button:hover {
-            background-color: #555;
-        }
-        
-    </style>
+    <link rel="stylesheet" href="styles/book-details.css">
 </head>
 <body>
     <header>
@@ -77,70 +18,6 @@
         </div>
     </div>
     
-
-    <script>
-        async function fetchBookDetails(id) {
-    try {
-        const response = await fetch(`http://localhost:8080/api/livros/${id}`);
-        if (response.status === 404) {
-            document.getElementById('book-details').innerHTML = '<p>Livro não encontrado.</p>';
-            return;
-        }
-        if (!response.ok) {
-            throw new Error('Erro ao buscar detalhes do livro: ' + response.statusText);
-        }
-        const livro = await response.json();
-        console.log(livro); // Adicione esta linha para inspecionar o JSON retornado
-        displayBookDetails(livro[0]);
-    } catch (error) {
-        console.error('Erro ao buscar detalhes do livro:', error);
-        alert('Não foi possível carregar os detalhes do livro.');
-    }
-}
-function irParaEmprestimo() {
-            const bookId = getBookIdFromURL();
-            if (bookId) {
-                window.location.href = `emprestimo.html?livroId=${bookId}`;
-            } else {
-                alert('ID do livro não encontrado.');
-            }
-        }
-function displayBookDetails(livro) {
-    const bookDetailsElement = document.getElementById('book-details');
-
-    const titulo = livro.titulo || 'Título não disponível';
-    const autores = livro.autores || 'Desconhecido';
-    const descricao = livro.descricao || 'Descrição não disponível';
-    const dataDePublicacao = livro.dataDePublicacao || 'Data não disponível';
-    const categoria = livro.categoria || 'Categoria não disponível';
-    const avaliacao = livro.avaliacao || 'Avaliação não disponível';
-    const numeroDePaginas = livro.numeroDePaginas || 'Número de páginas não disponível';
-    const imagemUrl = livro.imagemUrl || 'default-image.jpg';
-
-    bookDetailsElement.innerHTML = `
-        <img src="${imagemUrl}" alt="${titulo}">
-        <h2>${titulo}</h2>
-        <p><strong>Autor:</strong> ${autores}</p>
-        <p><strong>Publicação:</strong> ${dataDePublicacao}</p>
-        <p><strong>Número de Páginas:</strong> ${numeroDePaginas}</p>
-        <p><strong>Categoria:</strong> ${categoria}</p>
-        <p><strong>Avaliação:</strong> ${avaliacao}</p>
-        <p>${descricao}</p>
-    `;
-}
-
-        function getBookIdFromURL() {
-            const params = new URLSearchParams(window.location.search);
-            return params.get('id');
-        }
-
-        // Obter o ID do livro da URL e buscar os detalhes
-        const bookId = getBookIdFromURL();
-        if (bookId) {
-            fetchBookDetails(bookId);
-        } else {
-            alert('ID do livro não encontrado.');
-        }
-    </script>
+<script src="script/book-details.js"></script>
 </body>
 </html>

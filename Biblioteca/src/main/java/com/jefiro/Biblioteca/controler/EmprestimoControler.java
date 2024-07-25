@@ -2,7 +2,7 @@ package com.jefiro.Biblioteca.controler;
 
 import com.jefiro.Biblioteca.modelos.Cliente;
 import com.jefiro.Biblioteca.modelos.Emprestimo;
-import com.jefiro.Biblioteca.modelos.EmprestimoDTO;
+import com.jefiro.Biblioteca.modelos.dto.EmprestimoDTO;
 import com.jefiro.Biblioteca.modelos.Livro;
 import com.jefiro.Biblioteca.modelos.dto.LivroDTO;
 import com.jefiro.Biblioteca.modelos.dto.LivroDTODetails;

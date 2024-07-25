@@ -1,6 +1,0 @@
-buscar livro
-
-menu emprestar livro
--> buscar cliente, cadastrar cliente, voltar a tela anterior
-relatorio de emprestimos
--> livros emprestar livro,

@@ -1,6 +1,7 @@
 package com.jefiro.Biblioteca.controler;
 
 import com.jefiro.Biblioteca.modelos.*;
+import com.jefiro.Biblioteca.modelos.dto.EmprestimoDTO;
 import com.jefiro.Biblioteca.repository.ClienteRepository;
 import com.jefiro.Biblioteca.repository.EmprestimoRepository;
 import com.jefiro.Biblioteca.repository.LivrosRepository;
