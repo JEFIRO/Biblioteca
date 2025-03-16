@@ -33,3 +33,6 @@ A aplicação também fornece uma API RESTful para interação com os recursos d
 - **Empréstimos**
   - `GET /api/emprestimos`: Lista todos os empréstimos.
   - `POST /api/emprestimos`: Cria um novo empréstimo.
+  - 
+- **Projeto em desenvolvimento**
+  
